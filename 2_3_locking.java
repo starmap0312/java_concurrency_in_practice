@@ -36,8 +36,8 @@ public class UnsafeCachingFactorizer implements Servlet {
 // (bad example: Poor Concurrency)
 @ThreadSafe
 public class UnsafeCachingFactorizer implements Servlet {
-    @GuardedBy("this") private BigInteger lastNumber;
-    @GuardedBy("this") private BigInteger[] lastFactors;
+    @GuardedBy("this") private BigInteger lastNumber;    // guarded by servlet object's intrinsic lock (documented by @GuardedBy)
+    @GuardedBy("this") private BigInteger[] lastFactors; // guarded by servlet object's intrinsic lock (documented by @GuardedBy)
 
     public synchronized void service(ServletRequest req, ServletResponse resp) {
         BigInteger i = extractFromRequest(req);
