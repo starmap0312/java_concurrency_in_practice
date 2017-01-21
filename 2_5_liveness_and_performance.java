@@ -9,6 +9,7 @@
 //      ex. break down synchronized blocks: factoring ++hits into its own synchronized block
 //      ex. CachedFactorizer holds the lock when accessing state variables for the duration of compound actions
 //          but releases it before executing the potentially long-running factorization operation
+// 2) avoid holding locks during lengthy computations or operations (ex. network or console I/O)
 //
 // example: Servlet that Caches its Last Request and Result.
 
@@ -20,8 +21,8 @@ public class UnsafeCachingFactorizer implements Servlet {
 
     public synchronized void service(ServletRequest req, ServletResponse resp) {
         BigInteger i = extractFromRequest(req);
-        if (i.equals(lastNumber.get()) {
-            encodeIntoResponse(resp, lastFactors);
+        if (i.equals(lastNumber.get()) {                 // if the request number equals the cached lastNumber
+            encodeIntoResponse(resp, lastFactors);       // then return the cached lastFactors
         } else {
             BigInteger[] factors = factor(i);
             lastNumber = i;
@@ -30,6 +31,11 @@ public class UnsafeCachingFactorizer implements Servlet {
         }
     }
 }
+// cocurrent executions of three such tasks: A, B, C (poor concurrency)
+// ex.
+//   A -> factoring
+//   B              -> factoring
+//   C                           -> factoring
 
 // (good example: CachedFactorizer holds the lock when accessing state variables for the duration of compound actions
 //                but releases it before executing the potentially long-running factorization operation)
@@ -50,24 +56,24 @@ public class CachedFactorizer implements Servlet {
     public synchronized void service(ServletRequest req, ServletResponse resp) {
         BigInteger i = extractFromRequest(req);
         BigInteger[] factors = null;
-        synchronized (this)  {
-            ++hits;
+        synchronized (this)  {                           // this check-then-act compund action on lastNumber & lastFactors needs to
+            ++hits;                                      //   be in a mutex block
             if (i.equals(lastNumber)) {
                 ++cacheHits;
                 factors = lastFactors.clone();
             }
         }
         if (factors == null) {
-            factors = factor(i);
-            synchronized (this)  {
+            factors = factor(i);                         // factoring (CPU-intensive) does not need to be in a mutex block
+            synchronized (this)  {                       // access to lastNumber & lastFactors needs to be in a mutex block
                 lastNumber = i;
                 lastFactors = factors.clone();
             }
-            lastFactors = factors;
         }
         encodeIntoResponse(resp, factors);
     }
 }
-
-// 2) avoid holding locks during lengthy computations or operations (ex. network or console I/O)
+// the above restructuring provides a balance between:
+// 1) simplicity: synchronizing the entire method
+// 2) concurrency: synchronizing the shortest possible code paths
 
