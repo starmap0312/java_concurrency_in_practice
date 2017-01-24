@@ -105,3 +105,7 @@ while (!asleep) {
 // 2) the variable does not participate in invariants with other state variables
 // 3) locking is not required for any other reason while the variable is being accessed
 
+// volatile variables vs. AtomicInteger
+// 1) volatile: approximately that each individual read or write operation on that variable is atomic
+// 2) provide a wider variety of operations atomically, specifically including increment, i.e. i++
+
