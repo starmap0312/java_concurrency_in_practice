@@ -73,7 +73,7 @@ public class CachedFactorizer implements Servlet {
         encodeIntoResponse(resp, factors);
     }
 }
+// when one thread is doing factoring, other threads are not blocked and may return the cached factors
 // the above restructuring provides a balance between:
 // 1) simplicity: synchronizing the entire method
 // 2) concurrency: synchronizing the shortest possible code paths
-
