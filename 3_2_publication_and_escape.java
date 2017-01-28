@@ -1,17 +1,16 @@
 // Publication and Escape
-// 1) publication 
+// object escape problem in concurrent programming
+//   once an object escapes, another class or thread may, maliciously or carelessly, misuse it
+//   this could cause serious problem, ex. security, so use encapsulation as much as possible
+// 1) publication of an object
 //    pusblishing an object: make an object available to code outside of its current scope
 //    ex. by storing a reference to it where other code can find it (this couples different parts of code that use it)
 //        by returning it from a nonprivate method: so this may indirectly publish other objects
 //        by passing it to a method in another class (this couples callee and caller)
 //    in many situations, ensure that objects and their internals are not published (encapsulation)
 //    in some situations, we want to publish an object for general use (but in a thread-safe manner)
-// 2) escape
+// 2) escape of an object
 //    an object that is published when it should not have been is said to have escaped
-//
-// object escape problem in concurrent programming
-//   once an object escapes, another class or thread may, maliciously or carelessly, misuse it
-//   this could cause serious security problem, so use encapsulation as much as possible
 //
 // (example: publishing an object by storing a reference in a public static field)
 public static Set<Secret> knownSecrets;
