@@ -69,17 +69,24 @@ public class SyncrhonizedInteger {
 //   requiring all threads to synchronize on the same lock when accessing a shared mutable variable
 //   to guarantee that values written by one thread are made visible to other threads (otherwise, it might see a stale value)
 
-// Volatile Variables
+// volatile variables
 // 1) an alternative, weaker form of synchronization
-// 2) ensure that updates to a variable are propagated predictably to other threads
-// 3) tell compiler that this variable is shared and that operations on it should not be reordered with other memory operations
-//    i.e. volatile variables are not cached in registers or in caches where they are hidden from other processors (threads), so
-//         a read of a volatile variable always returns the most recent write by any thread
+//    the volatile keyword tells compiler that this variable is shared and that operations on it should not be reordered with other memory operations
+// 2) the effect of volatile keyword is that each individual "read" or "write" operation on that variable is atomic
+//    i.e. it ensures that updates (read/write) to a variable are propagated predictably to other threads
+// 3) volatile variables implies that they are not cached in registers or in caches where they are hidden from other processors (threads), so
+//    a read of a volatile variable always returns the most recent write by any thread
+// 4) note, declaring volatile does not mean ++ operation will be atomic, because i++ is equal to i = i + 1 (one read and one write)
+//    to make the operation atomic you need to ensure exclusive access using "synchronized" method or block
 
 // synchronized getter & setter vs. volatile variables
-//   accessing a volatile variable performs no locking and so cannot cause the executing thread to block
-//     declared as volatile prevents the reordering problem
-//   volatile variables is a lighter-weight synchronization mechanism than synchronized
+// 1) volatile variables is a lighter-weight synchronization mechanism than synchronized (no caching in registers)
+// 2) accessing a volatile variable performs no locking and so cannot cause the executing thread to block
+//    declared as volatile prevents the reordering problem
+
+// volatile variables vs. atomic variables
+// 1) volatile variables only ensures one read/write is atomic, so increment for volatile variable (ex. i++) is not atomic
+// 2) the Atomic classes, like AtomicInteger and AtomicReference, provide a wider variety of operations atomically: ex. increment for AtomicInteger
 
 // Rule of thumb
 // 1) use volatile variables only when they simplify implementing and verifying your synchronization policy
